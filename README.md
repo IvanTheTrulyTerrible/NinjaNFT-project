@@ -3,9 +3,9 @@ NFT minter for VZ Ninja programm
 
 The repository contains two parts, the first is a Hardhat project, the second a linked webapp.
 
-Smart Contract address on Mumbai testnet:   0x19c9ABB9821704B28e4e1f39722343fe6216252F
+Smart Contract address on Mumbai testnet:   0x51C7081FCc44debF8F26A66016E3f47374b774e1
 Webapp address:                             https://vz-ninja-nft.web.app
-Github repositary:                          github repositary: https://github.com/IvanTheTrulyTerrible/NinjaNFT-project/tree/main
+Github repositary:                          github repositary: https://github.com/IvanTheTrulyTerrible/NinjaNFT-project
 
 Installation instructions:
 - CD in Hardhat root folder and npm install all dependencies
