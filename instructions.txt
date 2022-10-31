@@ -1,0 +1,19 @@
+instructions:
+
+npm init -y
+npm install --save-dev hardhat
+npx hardhat
+npm install --save-dev "hardhat@^2.11.2" "@nomicfoundation/hardhat-toolbox@^2.0.0"
+npm install @openzeppelin/contracts
+npm install --save dotenv
+
+other terminal: npx hardhat node 
+npx hardhat run --network localhost scripts/deploy.js
+npx hardhat run --network hardhat scripts/deploy.js
+
+npm install create-react-app
+in folder -> npx create-react-app NAME
+remove yarn.lock
+npm install --save styled-components
+npm i ethers axios
+
