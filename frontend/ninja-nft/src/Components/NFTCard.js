@@ -35,8 +35,8 @@ const NFTCard = (props) => {
     margin: auto;
   `;
   const NftCard = styled.div`
-    width: 200px;
     height: 250px;
+    width: 200px;
     margin: auto;
     border-radius: 10px;
     padding: 0px;

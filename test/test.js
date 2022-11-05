@@ -5,18 +5,21 @@ describe("NinjaNFTNew", function () {
     let owner, addr1, addr2, addr3
 
   beforeEach(async() => {
+    const COLLECTION_NAME = "VZ Ninja NFT Collection";
     const ADMIN_NAME = "RJue";
     const NinjaNFTNew = await ethers.getContractFactory("NinjaNFTNew");
     [owner, addr1, addr2, addr3, addr4, addr5] = await ethers.getSigners();
-    ninjaNFT = await NinjaNFTNew.deploy(owner.address, ADMIN_NAME);
+    ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, owner.address, ADMIN_NAME);
     await ninjaNFT.deployed();
   });
 
   describe("Constructor", () => {
   // constructor testing
     it('should have correct main admin', async () => {
+      const _collectionName = await ninjaNFT.name();
       const _mainAdmin = await ninjaNFT.creator();
       const _mainAdminName = await ninjaNFT.admins(owner.address);
+      expect(_collectionName === "VZ Ninja NFT Collection");
       expect(_mainAdmin === owner.address);
       expect(_mainAdminName === "RJue");
       expect(ninjaNFT.adminAddr().length === 1);

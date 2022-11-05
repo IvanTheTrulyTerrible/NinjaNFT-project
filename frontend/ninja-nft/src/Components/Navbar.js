@@ -8,12 +8,16 @@ function Navbar({ user }) {
     const [showAdminModal, setShowAdminModal] = useState(false)
 
     const { chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, setNfts, errorPage, switchNetwork, connectWallet,
-        tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance } = useContext(Web3Context)
+      tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, isMobile, isMetamaskBrowser, metamaskDeeplink } = useContext(Web3Context)
 
     function toggleAdminModal() {
-        if (isAdmin) {
-            setShowAdminModal(!showAdminModal)
-        }
+      if (isAdmin) {
+          setShowAdminModal(!showAdminModal)
+      }
+    }
+
+    const openAppinMetamaskBrowser = async () => {
+      window.open(metamaskDeeplink);
     }
 
     return (
@@ -42,13 +46,17 @@ function Navbar({ user }) {
                     }
                     {maticBalance && <h5>MATIC balance: {Math.round(maticBalance*10000)/10000}</h5>
                     }
+                    {/*
                     {contractAddress !== "" && <h5>Smart Contract address: {contractAddress.substring(0, 4) + "..." + contractAddress.substring(contractAddress.length-4, contractAddress.length)}</h5>
                     }
                     {maticContractBalance && <h5>MATIC balance Contract: {Math.round(maticContractBalance*10000)/10000}</h5>
                     }
+                    */}
                     {isAdmin && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
                     }
-                    {currentAccount === "" && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
+                    {currentAccount === "" && isMobile === false &&<ConnectButton onClick={connectWallet}>Connect</ConnectButton>
+                    }
+                    {currentAccount === "" && isMobile && isMetamaskBrowser === false && <ConnectButton onClick={openAppinMetamaskBrowser}>Open App in Metamask Browser</ConnectButton>
                     }
                 </div>
             </ModalGrid>

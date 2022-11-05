@@ -17,6 +17,7 @@ contract NinjaNFTNew is ERC1155 {
     address[] public ninjaAddr;
 
     string constant internal baseUri = "https://gateway.pinata.cloud/ipfs/";
+    string public name;
     uint public tokenCount;
     mapping(uint => string) public tokenCountToUri;
     mapping(string => uint) public uriToTokenCount;
@@ -30,7 +31,8 @@ contract NinjaNFTNew is ERC1155 {
         uint quantity;      // number minted token
     }
 
-    constructor(address _creator, string memory _creatorName) ERC1155(baseUri) {
+    constructor(string memory _name, address _creator, string memory _creatorName) ERC1155(baseUri) {
+        name = _name;
         creator = _creator;
         admins[creator] = _creatorName;
         adminAddr.push(_creator);

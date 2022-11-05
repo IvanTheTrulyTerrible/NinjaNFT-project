@@ -17,3 +17,14 @@ remove yarn.lock
 npm install --save styled-components
 npm i ethers axios
 
+
+npm start
+
+=> if all is well then
+
+npm run build
+firebase deploy
+git add .
+git commit -m "message"
+git push origin master
+

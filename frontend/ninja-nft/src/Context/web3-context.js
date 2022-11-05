@@ -56,6 +56,10 @@ export const Web3Provider = ({ children }) => {
 
     const [tokenID, setTokenID] = useState(-1);
 
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMetamaskBrowser, setIsMetamaskBrowser] = useState(false);
+    const [metamaskDeeplink, setMetamaskDeeplink] = useState("");
+
     const contractAddress = contract_json.NinjaNFT
     const contractABI = abi.abi;
     const { ethereum } = window;
@@ -71,8 +75,27 @@ export const Web3Provider = ({ children }) => {
             setNinjaNFTContract(contract);
         }
 
+        const checkMobile = async () => {
+            const isMobile = window.matchMedia("only screen and (max-width: 760px)");
+            const isMobile2 = /(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile|w3c|acs\-|alav|alca|amoi|audi|avan|benq|bird|blac|blaz|brew|cell|cldc|cmd\-|dang|doco|eric|hipt|inno|ipaq|java|jigs|kddi|keji|leno|lg\-c|lg\-d|lg\-g|lge\-|maui|maxo|midp|mits|mmef|mobi|mot\-|moto|mwbp|nec\-|newt|noki|palm|pana|pant|phil|play|port|prox|qwap|sage|sams|sany|sch\-|sec\-|send|seri|sgh\-|shar|sie\-|siem|smal|smar|sony|sph\-|symb|t\-mo|teli|tim\-|tosh|tsm\-|upg1|upsi|vk\-v|voda|wap\-|wapa|wapi|wapp|wapr|webc|winw|winw|xda|xda\-) /i.test(navigator.userAgent);
+            if (isMobile.matches || isMobile2) {
+                setIsMobile(true);
+            }
+
+            const isInstalled = navigator.userAgent.indexOf("MetaMaskMobile") > -1;
+            console.log("isInstalled", isInstalled);
+            if (isInstalled) {
+                setIsMetamaskBrowser(true);
+            }
+
+            const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
+            console.log("metamaskAppDeepLink", metamaskAppDeepLink)
+            setMetamaskDeeplink(metamaskAppDeepLink);
+        }
+
         if (ethereum) 
             getContract();
+            checkMobile();
         if (ninjaNFTContract) 
             getAdmins();
             getNinjas();
@@ -190,12 +213,12 @@ export const Web3Provider = ({ children }) => {
             try {
                 if (!ethereum) {
                     console.log("Metamask not found")
-                    Swal.fire({
+                    /*Swal.fire({
                         title: 'Metamask',
                         text: 'No Metamask found, please install Metamask!',
                         icon: 'error',
                         showCancelButton: true
-                    })
+                    })*/
                     return;
                 } else {
                     console.log("we have etherium object")
@@ -403,7 +426,7 @@ export const Web3Provider = ({ children }) => {
             value={{
                 chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, ownNfts, setNfts, switchNetwork, connectWallet,
                 tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, adminList, ninjaList,
-                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance
+                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance, isMobile, isMetamaskBrowser, metamaskDeeplink
             }}
         >
             {children}
