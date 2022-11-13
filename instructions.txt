@@ -28,3 +28,10 @@ git add .
 git commit -m "message"
 git push origin master
 
+
+
+https://vz-ninja-nft.web.app/
+https://testnets.opensea.io/assets/mumbai/0xa7e74ab6fd7c827ce3bcfe031c3a820fd5a513af/1
+REACT_APP_DAPP_URL=vz-ninja-nft.web.app
+
+https://github.com/FidalMathew/Voting_system_blockchain

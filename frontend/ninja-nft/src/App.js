@@ -8,15 +8,17 @@ import Navbar from './Components/Navbar';
 
 function App() {
 
-  const { isAdmin, nfts, ownNfts } = useContext(Web3Context)
+  const { isAdmin, nfts, ownNfts, nftOwnerList } = useContext(Web3Context)
 
   const [showModal, setShowModal] = useState(false)
   const [selectedNft, setSelectedNft] = useState()
+  const [selectedNftOwners, setSelectedNftOwners] = useState()
   const [ownerFilter, setOwnerFilter] = useState(false)
 
   function toggleModal(i) {
     if (i >= 0) {
       setSelectedNft(nfts[i])
+      setSelectedNftOwners(nftOwnerList[i])
     }
     setShowModal(!showModal)
   }
@@ -55,6 +57,7 @@ function App() {
         showModal &&
         <NFTModal
           nft={selectedNft}
+          nftOwner={selectedNftOwners}
           toggleModal={() => toggleModal()}
         />
       }

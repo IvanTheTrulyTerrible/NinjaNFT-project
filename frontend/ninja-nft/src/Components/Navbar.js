@@ -54,7 +54,9 @@ function Navbar({ user }) {
                     */}
                     {isAdmin && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
                     }
-                    {currentAccount === "" && isMobile === false &&<ConnectButton onClick={connectWallet}>Connect</ConnectButton>
+                    {currentAccount === "" && isMetamaskBrowser && isMobile && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
+                    }
+                    {currentAccount === "" && isMobile === false && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
                     }
                     {currentAccount === "" && isMobile && isMetamaskBrowser === false && <ConnectButton onClick={openAppinMetamaskBrowser}>Open App in Metamask Browser</ConnectButton>
                     }

@@ -4,6 +4,7 @@ import { NFTProgressBar } from "./NFTProgressBar"
 
 const NFTModal = (props) => {
     let nft = props.nft
+    let owner = props.nftOwner
     return (
       <Modal>
         <ModalContent>
@@ -13,7 +14,7 @@ const NFTModal = (props) => {
               <ModalTitle>{nft.name}</ModalTitle>
               <Paragraph style={{ float: "right" }}> {`Symbol: ${nft && nft.symbol}`}</Paragraph>
               <Paragraph> {`Token ID: ${nft.tokenCount}`} </Paragraph>
-              <Paragraph> {`You own ${nft.copies} copies`} </Paragraph>
+              <Paragraph> {`You own ${nft.copies} copies of ${nft.quantity}`} </Paragraph>
               <SectionText> Description </SectionText>
               <Paragraph style={{ width: 400 }}> {nft.description} </Paragraph>
               <SectionText> Attributes </SectionText>
@@ -25,6 +26,14 @@ const NFTModal = (props) => {
                       <AttributeText style={{float: "right" }}> {attribute.value} </AttributeText>
                     </div>
                     <NFTProgressBar percent={attribute.value * 10} />
+                  </div>
+                )
+              }
+              <SectionText> Happy Ninjas owning this very NFT </SectionText>
+              {owner &&
+                owner.filter((attribute, i) => (attribute.quantity > 0)).map((filteredAttribute, j) =>
+                  <div key={j} >
+                    <Paragraph> {filteredAttribute.name} owns {filteredAttribute.quantity} </Paragraph>
                   </div>
                 )
               }

@@ -39,6 +39,16 @@ export const Web3Provider = ({ children }) => {
       { addr: "0xF50FF42e671fAC83251914bbbcAc3044a2fFc2b4", name: "CKr" }
     ]
 
+    let initialOwnedNfts =
+    [
+        [
+            { name: "CZb", quantity: 2 }, { name: "CKr", quantity: 5 }
+        ],
+        [
+            { name: "CZb", quantity: 1 }, { name: "CKr", quantity: 1 }
+        ]
+    ]
+
     const [chainId, setChainId] = useState("");
     const [currentAccount, setCurrentAccount] = useState("");
     const [currentShortName, setCurrentShortName] = useState("");
@@ -59,6 +69,8 @@ export const Web3Provider = ({ children }) => {
     const [isMobile, setIsMobile] = useState(false);
     const [isMetamaskBrowser, setIsMetamaskBrowser] = useState(false);
     const [metamaskDeeplink, setMetamaskDeeplink] = useState("");
+
+    const [nftOwnerList, setNFTOwnerList] = useState([]);
 
     const contractAddress = contract_json.NinjaNFT
     const contractABI = abi.abi;
@@ -88,7 +100,7 @@ export const Web3Provider = ({ children }) => {
                 setIsMetamaskBrowser(true);
             }
 
-            const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
+            const metamaskAppDeepLink = "//metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
             console.log("metamaskAppDeepLink", metamaskAppDeepLink)
             setMetamaskDeeplink(metamaskAppDeepLink);
         }
@@ -105,7 +117,7 @@ export const Web3Provider = ({ children }) => {
         const checkIfAdmin = async () => {
             try {
                 await chainId;
-
+                console.log("jajaa", `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`)
                 if (window.ethereum && ninjaNFTContract && currentAccount && chainId === `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`) {
                     let adm = await ninjaNFTContract.isAdmin(currentAccount);
                     setIsAdmin(adm);
@@ -154,6 +166,7 @@ export const Web3Provider = ({ children }) => {
         if (ninjaNFTContract) {
             getAdmins();
             getNinjas();
+            getNFTOwners();
         }
     }, [ninjaNFTContract])
 
@@ -264,9 +277,9 @@ export const Web3Provider = ({ children }) => {
                     title: 'Metamask',
                     text: 'No Metamask found, please install Metamask!',
                     icon: 'error',
-                    showCancelButton: true
+                    showCancelButton: false
                 })
-                alert("Get MetaMask!");
+                //alert("Get MetaMask!");
                 return;
             } else {
                 const accounts = await ethereum.request({ method: "eth_requestAccounts" }); // request connection with accounts
@@ -318,6 +331,7 @@ export const Web3Provider = ({ children }) => {
                     metadata.symbol = collectionSymbol
                     metadata.copies = copies[i - 1]
                     metadata.tokenCount = (nftStruct.id).toNumber()
+                    metadata.quantity = (nftStruct.quantity).toNumber()
                     tempArray.push(metadata)
                 }
                 setNfts(tempArray)
@@ -347,6 +361,7 @@ export const Web3Provider = ({ children }) => {
                         metadata.symbol = nftStruct.symbol
                         metadata.copies = copies[i - 1]
                         metadata.tokenCount = (nftStruct.id).toNumber()
+                        metadata.quantity = (nftStruct.quantity).toNumber()
                         tempArray.push(metadata)
                     }
                 }
@@ -421,12 +436,52 @@ export const Web3Provider = ({ children }) => {
         }
     }
 
+    const getNFTOwners = async () => {
+        if (ninjaNFTContract) {
+            try {
+                let numberOfNinjas = (await ninjaNFTContract.getNinjaArrayLength()).toNumber()
+                let ninjaArray = []
+                let tempArray = []
+                let tempSecondArray = []
+                let metadata = {}
+
+                for (let i = 0; i < numberOfNinjas; i++) {
+                    let currentNinjaAddress = await ninjaNFTContract.ninjaAddr(i)
+                    ninjaArray.push(currentNinjaAddress)
+                }
+
+                let numberOfNfts = (await ninjaNFTContract.tokenCount()).toNumber()
+                if (numberOfNfts === 0) {
+                    setNFTOwnerList(initialOwnedNfts)
+                } else {
+                    for (let i = 0; i < numberOfNfts; i++) {
+                        tempSecondArray = []
+                        let nftId = Array(numberOfNinjas).fill(i + 1)
+                        let copies = await ninjaNFTContract.balanceOfBatch(ninjaArray, nftId)
+                        for (let j = 0; j < numberOfNinjas; j++) {
+                            metadata = {}
+                            let ninjaName = await ninjaNFTContract.ninjas(ninjaArray[j])
+                            metadata.name = ninjaName
+                            metadata.quantity = (copies[j]).toNumber()
+                            tempSecondArray.push(metadata)
+                        }
+                        tempArray.push(tempSecondArray)
+                    }
+                }
+
+                setNFTOwnerList(tempArray)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
     return (
         <Web3Context.Provider
             value={{
                 chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, ownNfts, setNfts, switchNetwork, connectWallet,
                 tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, adminList, ninjaList,
-                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance, isMobile, isMetamaskBrowser, metamaskDeeplink
+                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance, isMobile, isMetamaskBrowser, metamaskDeeplink, nftOwnerList
             }}
         >
             {children}
