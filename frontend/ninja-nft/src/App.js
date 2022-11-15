@@ -18,7 +18,7 @@ function App() {
   function toggleModal(i) {
     if (i >= 0) {
       setSelectedNft(nfts[i])
-      setSelectedNftOwners(nftOwnerList[i])
+      setSelectedNftOwners(nftOwnerList[nfts[i].tokenCount - 1])
     }
     setShowModal(!showModal)
   }

@@ -8,7 +8,7 @@ function Navbar({ user }) {
     const [showAdminModal, setShowAdminModal] = useState(false)
 
     const { chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, setNfts, errorPage, switchNetwork, connectWallet,
-      tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, isMobile, isMetamaskBrowser, metamaskDeeplink } = useContext(Web3Context)
+      tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink } = useContext(Web3Context)
 
     function toggleAdminModal() {
       if (isAdmin) {
@@ -16,8 +16,12 @@ function Navbar({ user }) {
       }
     }
 
-    const openAppinMetamaskBrowser = async () => {
+    const openAppInMetamaskBrowser = async () => {
       window.open(metamaskDeeplink);
+    }
+
+    const openAppInBraveBrowser = async () => {
+      window.open(braveDeeplink);
     }
 
     return (
@@ -42,7 +46,7 @@ function Navbar({ user }) {
                     }
                     {contractAddress !== "" && <h3>Contract Address: {contractAddress}</h3>
                     }*/}
-                    {currentAccount !== "" && <h5>Account address: {currentAccount.substring(0, 4) + "..." + currentAccount.substring(currentAccount.length-4, currentAccount.length)}</h5>
+                    {currentAccount !== "" && currentAccount && <h5>Account address: {currentAccount.substring(0, 4) + "..." + currentAccount.substring(currentAccount.length-4, currentAccount.length)}</h5>
                     }
                     {maticBalance && <h5>MATIC balance: {Math.round(maticBalance*10000)/10000}</h5>
                     }
@@ -52,13 +56,17 @@ function Navbar({ user }) {
                     {maticContractBalance && <h5>MATIC balance Contract: {Math.round(maticContractBalance*10000)/10000}</h5>
                     }
                     */}
-                    {isAdmin && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
+                    {isAdmin && currentAccount && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
                     }
                     {currentAccount === "" && isMetamaskBrowser && isMobile && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
                     }
+                    {currentAccount === "" && isBraveBrowser && isMobile && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
+                    }
                     {currentAccount === "" && isMobile === false && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
                     }
-                    {currentAccount === "" && isMobile && isMetamaskBrowser === false && <ConnectButton onClick={openAppinMetamaskBrowser}>Open App in Metamask Browser</ConnectButton>
+                    {currentAccount === "" && isMobile && isMetamaskBrowser === false && <ConnectButton onClick={openAppInMetamaskBrowser}>Open App in Metamask Browser</ConnectButton>
+                    }
+                    {currentAccount === "" && isMobile && isBraveBrowser === false && <ConnectButton onClick={openAppInBraveBrowser}>Open App in Brave Browser</ConnectButton>
                     }
                 </div>
             </ModalGrid>

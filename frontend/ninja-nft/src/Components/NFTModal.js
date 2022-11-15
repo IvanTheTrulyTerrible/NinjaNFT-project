@@ -5,6 +5,7 @@ import { NFTProgressBar } from "./NFTProgressBar"
 const NFTModal = (props) => {
     let nft = props.nft
     let owner = props.nftOwner
+
     return (
       <Modal>
         <ModalContent>

@@ -69,12 +69,25 @@ export const Web3Provider = ({ children }) => {
     const [isMobile, setIsMobile] = useState(false);
     const [isMetamaskBrowser, setIsMetamaskBrowser] = useState(false);
     const [metamaskDeeplink, setMetamaskDeeplink] = useState("");
+    const [isBraveBrowser, setIsBraveBrowser] = useState(false);
+    const [braveDeeplink, setBraveDeeplink] = useState("");
 
     const [nftOwnerList, setNFTOwnerList] = useState([]);
 
     const contractAddress = contract_json.NinjaNFT
     const contractABI = abi.abi;
     const { ethereum } = window;
+
+    useEffect(() => {
+        if (!ethereum || !ninjaNFTContract || !currentAccount) {
+            getInitialNFTs();
+            getInitialNFTOwners();
+        }
+
+        return () => {
+            // ethereum.removeListener('accountsChanged');
+        }
+    }, [ethereum, ninjaNFTContract, currentAccount])
 
     useEffect(() => {
         const getContract = async () => {
@@ -94,15 +107,27 @@ export const Web3Provider = ({ children }) => {
                 setIsMobile(true);
             }
 
-            const isInstalled = navigator.userAgent.indexOf("MetaMaskMobile") > -1;
-            console.log("isInstalled", isInstalled);
-            if (isInstalled) {
+            const metamaskIsInstalled = navigator.userAgent.indexOf("MetaMaskMobile") > -1;
+            if (metamaskIsInstalled) {
                 setIsMetamaskBrowser(true);
+                const metamaskAppDeepLink = "//metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
+                console.log("metamaskAppDeepLink", metamaskAppDeepLink)
+                setMetamaskDeeplink(metamaskAppDeepLink);
+            } else {
+                setIsMetamaskBrowser(false);
+                setMetamaskDeeplink("");
             }
 
-            const metamaskAppDeepLink = "//metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
-            console.log("metamaskAppDeepLink", metamaskAppDeepLink)
-            setMetamaskDeeplink(metamaskAppDeepLink);
+            const braveIsInstalled = navigator.userAgent.indexOf("brave") > -1;
+            if (braveIsInstalled) {
+                setIsBraveBrowser(true);
+                const braveAppDeepLink = "brave://open-url?url=" + `${process.env.REACT_APP_DAPP_URL}`;
+                console.log("braveAppDeepLink", braveAppDeepLink)
+                setBraveDeeplink(braveAppDeepLink);
+            } else {
+                setIsBraveBrowser(false);
+                setBraveDeeplink("");
+            }
         }
 
         if (ethereum) 
@@ -117,7 +142,6 @@ export const Web3Provider = ({ children }) => {
         const checkIfAdmin = async () => {
             try {
                 await chainId;
-                console.log("jajaa", `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`)
                 if (window.ethereum && ninjaNFTContract && currentAccount && chainId === `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`) {
                     let adm = await ninjaNFTContract.isAdmin(currentAccount);
                     setIsAdmin(adm);
@@ -269,17 +293,14 @@ export const Web3Provider = ({ children }) => {
     }, [currentAccount, contractABI, ethereum])
 
     const connectWallet = async () => {
-        console.log("here we are in connectWAllet function")
         try {
             if (!ethereum) {
-                console.log("here we are in connectWAllet function")
                 Swal.fire({
                     title: 'Metamask',
                     text: 'No Metamask found, please install Metamask!',
                     icon: 'error',
                     showCancelButton: false
                 })
-                //alert("Get MetaMask!");
                 return;
             } else {
                 const accounts = await ethereum.request({ method: "eth_requestAccounts" }); // request connection with accounts
@@ -309,6 +330,40 @@ export const Web3Provider = ({ children }) => {
     const getMetadataFromIpfs = async (tokenURI) => {
         let metadata = await axios.get(tokenURI)
         return metadata.data
+    }
+
+    const getInitialNFTs = async () => {
+        let backend_url = `${process.env.REACT_APP_BACKEND_URL}` + "initialNfts.json"
+        let nftData = await axios.get(backend_url)
+        const loadedNfts = []
+        for (const key in nftData.data) {
+            loadedNfts.push({
+                description: nftData.data[key].description,
+                image: nftData.data[key].image,
+                name: nftData.data[key].name,
+                attributes: nftData.data[key].attributes,
+                symbol: nftData.data[key].symbol,
+                tokenCount: nftData.data[key].tokenCount,
+                quantity: nftData.data[key].quantity,
+                copies: nftData.data[key].copies
+            });
+        }
+        setNfts(loadedNfts);
+        setOwnNfts([]);
+    }
+
+    const getInitialNFTOwners = async () => {
+        let backend_url = `${process.env.REACT_APP_BACKEND_URL}` + "initialNftOwners.json"
+        let nftData = await axios.get(backend_url)
+        const loadedNftOwners = []
+        for (const key in nftData.data) {
+            var dataObject = nftData.data[key].tempArray
+            break
+        }
+        for (let i = 0; i < dataObject.length; i++) {
+            loadedNftOwners.push(dataObject[i])
+        }
+        setNFTOwnerList(loadedNftOwners)
     }
 
     const getNfts = async () => {
@@ -468,8 +523,17 @@ export const Web3Provider = ({ children }) => {
                         tempArray.push(tempSecondArray)
                     }
                 }
-
                 setNFTOwnerList(tempArray)
+                
+                try {
+                    const responseDel = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}` + "initialNftOwners.json");
+                    const responsePost = await axios.post(`${process.env.REACT_APP_BACKEND_URL}` + "initialNftOwners.json", {
+                        tempArray
+                    });
+                  } catch (error) {
+                    console.log("JSON to Firebase:", error)
+                  }
+
             } catch (error) {
                 console.log(error);
             }
@@ -481,7 +545,8 @@ export const Web3Provider = ({ children }) => {
             value={{
                 chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, ownNfts, setNfts, switchNetwork, connectWallet,
                 tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, adminList, ninjaList,
-                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance, isMobile, isMetamaskBrowser, metamaskDeeplink, nftOwnerList
+                getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance, isMobile, isMetamaskBrowser, metamaskDeeplink, nftOwnerList,
+                isBraveBrowser, braveDeeplink
             }}
         >
             {children}

@@ -32,7 +32,6 @@ const NFTAdminModal = (props) => {
 
     const sendFileToIPFS = async (e) => {
       e.preventDefault();
-      console.log(formFields);
       if (fileImg) {
         try {
           const formData = new FormData();
@@ -77,7 +76,6 @@ const NFTAdminModal = (props) => {
         const _cleandedObject = objectCleaner(formFields[i], CLEANER_VALUES);
         cleanArray.push(_cleandedObject);
       }
-      console.log("after clean-up", cleanArray);
       
       try {
         const resJSON = await axios({
@@ -98,19 +96,16 @@ const NFTAdminModal = (props) => {
         console.log("final ", `https://gateway.pinata.cloud/ipfs/${resJSON.data.IpfsHash}`)
         const tokenURI = `https://gateway.pinata.cloud/ipfs/${resJSON.data.IpfsHash}`;
         console.log("Token URI", tokenURI);
-        mintNFT(tokenURI, currentAccount)
+        mintNFT(tokenURI, currentAccount, desc, ImgHash, name, cleanArray)
       } catch (error) {
         console.log("JSON to IPFS: ")
         console.log(error);
       }
     }
 
-    const mintNFT = async (tokenURI) => {
+    const mintNFT = async (tokenURI, currentAccount, desc, ImgHash, name, cleanArray) => {
       try {
         let response = await ninjaNFTContract.createAndMintNFT(tokenURI, currentAccount, symb, amount)
-
-        let val = (await ninjaNFTContract.uriToTokenCount(tokenURI)).toNumber();
-        console.log("NFT number:", val)
 
         setFileImg("");
         setName("");
@@ -120,10 +115,27 @@ const NFTAdminModal = (props) => {
         let receipt = await response.wait()
         let eve = receipt.events[0]
         console.log(await eve.getTransactionReceipt());
+        let val = (await ninjaNFTContract.uriToTokenCount(tokenURI)).toNumber();
+        console.log("NFT number:", val)
         getNfts();
         getOwnNfts();
         getMaticBalance();
 
+        try {
+          const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}` + "initialNfts.json", {
+              "description": desc,
+              "image": ImgHash,
+              "name": name,
+              "attributes": cleanArray,
+              "symbol": symb,
+              "tokenCount": val,
+              "quantity": amount,
+              "copies": 0
+          });
+          console.log("response", response)
+        } catch (error) {
+          console.log("JSON to Firebase:", error)
+        }
         props.toggleAdminModal();
 
       } catch (error) {
