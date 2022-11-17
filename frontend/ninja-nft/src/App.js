@@ -15,6 +15,10 @@ function App() {
   const [selectedNftOwners, setSelectedNftOwners] = useState()
   const [ownerFilter, setOwnerFilter] = useState(false)
 
+  useEffect(() => {
+    console.log("app.js update triggered")
+  }, [nfts, ownNfts, nftOwnerList])
+
   function toggleModal(i) {
     if (i >= 0) {
       setSelectedNft(nfts[i])
