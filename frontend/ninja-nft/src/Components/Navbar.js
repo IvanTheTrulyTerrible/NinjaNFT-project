@@ -39,6 +39,18 @@ function Navbar({ user }) {
                     }
                     {isNinja && <h5>Admire your rightful and prestitious NFT badges</h5>
                     }
+                    {/*
+                    {<h5>IsMobile: {isMobile}</h5>
+                    }
+                    {<h5>IsMetamask: {isMetamaskBrowser}</h5>
+                    }
+                    {<h5>MMDeeplink: {metamaskDeeplink}</h5>
+                    }
+                    {<h5>IsBrave: {isBraveBrowser}</h5>
+                    }
+                    {<h5>BraveDeeplink: {braveDeeplink}</h5>
+                    }
+                  */}
                 </div>
                 <div>
                     {/*
@@ -56,7 +68,7 @@ function Navbar({ user }) {
                     {maticContractBalance && <h5>MATIC balance Contract: {Math.round(maticContractBalance*10000)/10000}</h5>
                     }
                     */}
-                    {isAdmin && currentAccount && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
+                    {isAdmin && currentAccount !== "" && currentAccount && <ModalButton onClick={() => toggleAdminModal()} >Admin View</ModalButton>
                     }
                     {currentAccount === "" && isMetamaskBrowser && isMobile && <ConnectButton onClick={connectWallet}>Connect</ConnectButton>
                     }

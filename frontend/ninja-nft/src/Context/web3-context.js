@@ -97,36 +97,35 @@ export const Web3Provider = ({ children }) => {
             const contract = new ethers.Contract(contractAddress, contractABI, signer);
             
             console.log("contract found at ", contractAddress);
-            setNinjaNFTContract(contract);
+            await setNinjaNFTContract(contract);
         }
 
         const checkMobile = async () => {
+            const metamaskAppDeepLink = "//metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
+            await setMetamaskDeeplink(metamaskAppDeepLink);
+            const braveAppDeepLink = "brave://open-url?url=" + `${process.env.REACT_APP_DAPP_URL}`;
+            await setBraveDeeplink(braveAppDeepLink);
+
             const isMobile = window.matchMedia("only screen and (max-width: 760px)");
             const isMobile2 = /(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile|w3c|acs\-|alav|alca|amoi|audi|avan|benq|bird|blac|blaz|brew|cell|cldc|cmd\-|dang|doco|eric|hipt|inno|ipaq|java|jigs|kddi|keji|leno|lg\-c|lg\-d|lg\-g|lge\-|maui|maxo|midp|mits|mmef|mobi|mot\-|moto|mwbp|nec\-|newt|noki|palm|pana|pant|phil|play|port|prox|qwap|sage|sams|sany|sch\-|sec\-|send|seri|sgh\-|shar|sie\-|siem|smal|smar|sony|sph\-|symb|t\-mo|teli|tim\-|tosh|tsm\-|upg1|upsi|vk\-v|voda|wap\-|wapa|wapi|wapp|wapr|webc|winw|winw|xda|xda\-) /i.test(navigator.userAgent);
             if (isMobile.matches || isMobile2) {
                 setIsMobile(true);
+            } else {
+                setIsMobile(false);
             }
 
             const metamaskIsInstalled = navigator.userAgent.indexOf("MetaMaskMobile") > -1;
             if (metamaskIsInstalled) {
                 setIsMetamaskBrowser(true);
-                const metamaskAppDeepLink = "//metamask.app.link/dapp/" + `${process.env.REACT_APP_DAPP_URL}`;
-                console.log("metamaskAppDeepLink", metamaskAppDeepLink)
-                setMetamaskDeeplink(metamaskAppDeepLink);
             } else {
                 setIsMetamaskBrowser(false);
-                setMetamaskDeeplink("");
             }
 
             const braveIsInstalled = navigator.userAgent.indexOf("brave") > -1;
             if (braveIsInstalled) {
                 setIsBraveBrowser(true);
-                const braveAppDeepLink = "brave://open-url?url=" + `${process.env.REACT_APP_DAPP_URL}`;
-                console.log("braveAppDeepLink", braveAppDeepLink)
-                setBraveDeeplink(braveAppDeepLink);
             } else {
                 setIsBraveBrowser(false);
-                setBraveDeeplink("");
             }
         }
 
