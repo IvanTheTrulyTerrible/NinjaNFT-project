@@ -11,20 +11,20 @@ export const Web3Provider = ({ children }) => {
 
     let initialNfts =
     [
-      { name: "VZ Ninja 2022", symbol: "NJ22", copies: 5, tokenCount: 1, image: "https://via.placeholder.com/150" },
-      { name: "VZ Ninja 2023", symbol: "NJ23", copies: 10, tokenCount: 2, image: "https://via.placeholder.com/150" },
-      { name: "VZ Silver Ninja 2022", symbol: "NS22", copies: 5, tokenCount: 3, image: "https://via.placeholder.com/150" },
-      { name: "VZ Silver Ninja 2023", symbol: "NS23", copies: 1, tokenCount: 4, image: "https://via.placeholder.com/150" },
-      { name: "VZ Gold Ninja 2022", symbol: "NG22", copies: 2, tokenCount: 5, image: "https://via.placeholder.com/150" },
-      { name: "VZ Gold Ninja 2023", symbol: "NG23", copies: 1, tokenCount: 6, image: "https://via.placeholder.com/150" },
-      { name: "VZ Diamond Ninja 2022", symbol: "ND22", copies: 1, tokenCount: 7, image: "https://via.placeholder.com/150" },
-      { name: "VZ Diamond Ninja 2023", symbol: "ND23", copies: 1, tokenCount: 8, image: "https://via.placeholder.com/150" }
+      { name: "VZ Ninja 2022", copies: 5, tokenCount: 1, image: "https://via.placeholder.com/150" },
+      { name: "VZ Ninja 2023", copies: 10, tokenCount: 2, image: "https://via.placeholder.com/150" },
+      { name: "VZ Silver Ninja 2022", copies: 5, tokenCount: 3, image: "https://via.placeholder.com/150" },
+      { name: "VZ Silver Ninja 2023", copies: 1, tokenCount: 4, image: "https://via.placeholder.com/150" },
+      { name: "VZ Gold Ninja 2022", copies: 2, tokenCount: 5, image: "https://via.placeholder.com/150" },
+      { name: "VZ Gold Ninja 2023", copies: 1, tokenCount: 6, image: "https://via.placeholder.com/150" },
+      { name: "VZ Diamond Ninja 2022", copies: 1, tokenCount: 7, image: "https://via.placeholder.com/150" },
+      { name: "VZ Diamond Ninja 2023", copies: 1, tokenCount: 8, image: "https://via.placeholder.com/150" }
     ]
 
     let initialOwnNfts =
     [
-      { name: "VZ Ninja 2022", symbol: "NJ22", copies: 5, tokenCount: 1, image: "https://via.placeholder.com/150" },
-      { name: "VZ Ninja 2023", symbol: "NJ23", copies: 10, tokenCount: 2, image: "https://via.placeholder.com/150" }
+      { name: "VZ Ninja 2022", copies: 5, tokenCount: 1, image: "https://via.placeholder.com/150" },
+      { name: "VZ Ninja 2023", copies: 10, tokenCount: 2, image: "https://via.placeholder.com/150" }
     ]
 
     let initialAdmins =
@@ -49,6 +49,14 @@ export const Web3Provider = ({ children }) => {
         ]
     ]
 
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMetamaskBrowser, setIsMetamaskBrowser] = useState(false);
+    const [metamaskDeeplink, setMetamaskDeeplink] = useState("");
+    const [isBraveBrowser, setIsBraveBrowser] = useState(false);
+    const [braveDeeplink, setBraveDeeplink] = useState("");
+
+    const [nftOwnerList, setNFTOwnerList] = useState([]);
+
     const [chainId, setChainId] = useState("");
     const [currentAccount, setCurrentAccount] = useState("");
     const [currentShortName, setCurrentShortName] = useState("");
@@ -66,14 +74,6 @@ export const Web3Provider = ({ children }) => {
 
     const [tokenID, setTokenID] = useState(-1);
 
-    const [isMobile, setIsMobile] = useState(false);
-    const [isMetamaskBrowser, setIsMetamaskBrowser] = useState(false);
-    const [metamaskDeeplink, setMetamaskDeeplink] = useState("");
-    const [isBraveBrowser, setIsBraveBrowser] = useState(false);
-    const [braveDeeplink, setBraveDeeplink] = useState("");
-
-    const [nftOwnerList, setNFTOwnerList] = useState([]);
-
     const contractAddress = contract_json.NinjaNFT
     const contractABI = abi.abi;
     const { ethereum } = window;
@@ -90,14 +90,26 @@ export const Web3Provider = ({ children }) => {
     }, [ethereum, ninjaNFTContract, currentAccount])
 
     useEffect(() => {
+        console.log(isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink)
+
+        return () => {
+            // ethereum.removeListener('accountsChanged');
+        }
+    }, [isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink])
+
+    useEffect(() => {
         const getContract = async () => {
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            setEthersProvider(provider);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(contractAddress, contractABI, signer);
-            
-            console.log("contract found at ", contractAddress);
-            await setNinjaNFTContract(contract);
+            try {
+                const provider = new ethers.providers.Web3Provider(ethereum);
+                setEthersProvider(provider);
+                const signer = provider.getSigner();
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+                
+                console.log("contract found at ", contractAddress);
+                await setNinjaNFTContract(contract);
+            } catch (error) {
+                console.log("no contract found");
+            }
         }
 
         const checkMobile = async () => {
@@ -105,6 +117,7 @@ export const Web3Provider = ({ children }) => {
             await setMetamaskDeeplink(metamaskAppDeepLink);
             const braveAppDeepLink = "brave://open-url?url=" + `${process.env.REACT_APP_DAPP_URL}`;
             await setBraveDeeplink(braveAppDeepLink);
+            console.log("metamaskDeeplink", metamaskDeeplink)
 
             const isMobile = window.matchMedia("only screen and (max-width: 760px)");
             const isMobile2 = /(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile|w3c|acs\-|alav|alca|amoi|audi|avan|benq|bird|blac|blaz|brew|cell|cldc|cmd\-|dang|doco|eric|hipt|inno|ipaq|java|jigs|kddi|keji|leno|lg\-c|lg\-d|lg\-g|lge\-|maui|maxo|midp|mits|mmef|mobi|mot\-|moto|mwbp|nec\-|newt|noki|palm|pana|pant|phil|play|port|prox|qwap|sage|sams|sany|sch\-|sec\-|send|seri|sgh\-|shar|sie\-|siem|smal|smar|sony|sph\-|symb|t\-mo|teli|tim\-|tosh|tsm\-|upg1|upsi|vk\-v|voda|wap\-|wapa|wapi|wapp|wapr|webc|winw|winw|xda|xda\-) /i.test(navigator.userAgent);
@@ -341,7 +354,6 @@ export const Web3Provider = ({ children }) => {
                 image: nftData.data[key].image,
                 name: nftData.data[key].name,
                 attributes: nftData.data[key].attributes,
-                symbol: nftData.data[key].symbol,
                 tokenCount: nftData.data[key].tokenCount,
                 quantity: nftData.data[key].quantity,
                 copies: nftData.data[key].copies
@@ -381,8 +393,6 @@ export const Web3Provider = ({ children }) => {
                     let tokenURI = await ninjaNFTContract.uri(i)
                     let metadata = await getMetadataFromIpfs(tokenURI)
                     let nftStruct = await ninjaNFTContract.tokenCountToTokenInfo(i)
-                    let collectionSymbol = nftStruct.symbol
-                    metadata.symbol = collectionSymbol
                     metadata.copies = copies[i - 1]
                     metadata.tokenCount = (nftStruct.id).toNumber()
                     metadata.quantity = (nftStruct.quantity).toNumber()
@@ -412,7 +422,6 @@ export const Web3Provider = ({ children }) => {
                         let tokenURI = await ninjaNFTContract.uri(i)
                         let metadata = await getMetadataFromIpfs(tokenURI)
                         let nftStruct = await ninjaNFTContract.tokenCountToTokenInfo(i)
-                        metadata.symbol = nftStruct.symbol
                         metadata.copies = copies[i - 1]
                         metadata.tokenCount = (nftStruct.id).toNumber()
                         metadata.quantity = (nftStruct.quantity).toNumber()

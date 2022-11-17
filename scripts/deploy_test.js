@@ -5,13 +5,14 @@ const { ethers } = require("hardhat");
 
 async function main() {
   const TEST_MODE = false;
-  const COLLECTION_NAME = "VZ Ninja NFT Collection";
+  const COLLECTION_NAME = "VZ NFT Collection";
+  const COLLECTION_SYMBOL = "VZNFT";
   const ADMIN_NAME = "RJue";
   const signers = await ethers.getSigners();
   signer = signers[0].address;
 
   const NinjaNFTNew = await ethers.getContractFactory("NinjaNFTNew");
-  const ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, signer, ADMIN_NAME);
+  const ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, COLLECTION_SYMBOL, signer, ADMIN_NAME);
   await ninjaNFT.deployed();
   
   console.log("Contract address:", ninjaNFT.address);

@@ -18,6 +18,7 @@ contract NinjaNFTNew is ERC1155 {
 
     string constant internal baseUri = "https://gateway.pinata.cloud/ipfs/";
     string public name;
+    string public symbol;
     uint public tokenCount;
     mapping(uint => string) public tokenCountToUri;
     mapping(string => uint) public uriToTokenCount;
@@ -26,13 +27,13 @@ contract NinjaNFTNew is ERC1155 {
     struct TokenInfo{
         uint id;            // token index in array
         string name;        // token name
-        string symbol;      // token symobl
         string uri;         // token metadata uri
         uint quantity;      // number minted token
     }
 
-    constructor(string memory _name, address _creator, string memory _creatorName) ERC1155(baseUri) {
+    constructor(string memory _name, string memory _symbol, address _creator, string memory _creatorName) ERC1155(baseUri) {
         name = _name;
+        symbol = _symbol;
         creator = _creator;
         admins[creator] = _creatorName;
         adminAddr.push(_creator);
@@ -44,18 +45,17 @@ contract NinjaNFTNew is ERC1155 {
         _;
     }
 
-    event CreateNFT(uint indexed count, string uri, string name, string symbol);
+    event CreateNFT(uint indexed count, string uri, string name);
     event ChangeAdmin(address indexed admin, string indexed adminName);
     event ChangeNinja(address indexed admin, string indexed adminName);
 
-    function createAndMintNFT(string memory _uri, string memory _name, string memory _symbol, uint _amount) public onlyAdmin {
+    function createAndMintNFT(string memory _uri, string memory _name, uint _amount) public onlyAdmin {
         require(uriToTokenCount[_uri] == 0, "Uri already in use");
         tokenCount += 1;
         tokenCountToUri[tokenCount] = _uri;
         uriToTokenCount[_uri] = tokenCount;
         tokenCountToTokenInfo[tokenCount].id = tokenCount;
         tokenCountToTokenInfo[tokenCount].name = _name;
-        tokenCountToTokenInfo[tokenCount].symbol = _symbol;
         tokenCountToTokenInfo[tokenCount].uri = _uri;
         tokenCountToTokenInfo[tokenCount].quantity = _amount;
         console.log(
@@ -64,7 +64,7 @@ contract NinjaNFTNew is ERC1155 {
             tokenCountToTokenInfo[tokenCount].uri,
             tokenCountToTokenInfo[tokenCount].quantity
         );   //hardhat testing
-        emit CreateNFT(tokenCount, _uri, _name, _symbol);
+        emit CreateNFT(tokenCount, _uri, _name);
         _mint(msg.sender, tokenCount, _amount, "");
     }
 

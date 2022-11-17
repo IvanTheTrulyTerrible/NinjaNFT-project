@@ -5,11 +5,12 @@ describe("NinjaNFTNew", function () {
     let owner, addr1, addr2, addr3
 
   beforeEach(async() => {
-    const COLLECTION_NAME = "VZ Ninja NFT Collection";
+    const COLLECTION_NAME = "VZ NFT Collection";
+    const COLLECTION_SYMBOL = "VZNFT";
     const ADMIN_NAME = "RJue";
     const NinjaNFTNew = await ethers.getContractFactory("NinjaNFTNew");
     [owner, addr1, addr2, addr3, addr4, addr5] = await ethers.getSigners();
-    ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, owner.address, ADMIN_NAME);
+    ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, COLLECTION_SYMBOL, owner.address, ADMIN_NAME);
     await ninjaNFT.deployed();
   });
 
@@ -17,9 +18,11 @@ describe("NinjaNFTNew", function () {
   // constructor testing
     it('should have correct main admin', async () => {
       const _collectionName = await ninjaNFT.name();
+      const _collectionSymbol = await ninjaNFT.symbol();
       const _mainAdmin = await ninjaNFT.creator();
       const _mainAdminName = await ninjaNFT.admins(owner.address);
-      expect(_collectionName === "VZ Ninja NFT Collection");
+      expect(_collectionName === "VZ NFT Collection");
+      expect(_collectionSymbol === "VZNFT");
       expect(_mainAdmin === owner.address);
       expect(_mainAdminName === "RJue");
       expect(ninjaNFT.adminAddr().length === 1);
@@ -82,8 +85,8 @@ describe("NinjaNFTNew", function () {
   describe("Uri", () => {
   // uri function testing
     it('should return correct uri', async () => {
-      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", "symbol_token1", 50);
-      await ninjaNFT.createAndMintNFT("uri_token2", "name_token2", "symbol_token2", 100);
+      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", 50);
+      await ninjaNFT.createAndMintNFT("uri_token2", "name_token2", 100);
       expect(ninjaNFT.uri(1) === "uri_token1");
       expect(ninjaNFT.uri(2) === "uri_token2");
     });
@@ -93,17 +96,16 @@ describe("NinjaNFTNew", function () {
   // testing of creating
     it('should not create NFT', async () => {
       console.log(await ninjaNFT.tokenCountToUri(3));
-      await ninjaNFT.createAndMintNFT("uri_token3", "name_token3", "symbol_token3", 50);
-      await expect(ninjaNFT.createAndMintNFT("uri_token3", "name_token3", "symbol_token3", 50)).to.be.revertedWith("Uri already in use");
+      await ninjaNFT.createAndMintNFT("uri_token3", "name_token3", 50);
+      await expect(ninjaNFT.createAndMintNFT("uri_token3", "name_token3", 50)).to.be.revertedWith("Uri already in use");
     });
 
     it('should create NFT', async () => {
-      await ninjaNFT.createAndMintNFT("uri_token4", "name_token4", "symbol_token4", 50);
+      await ninjaNFT.createAndMintNFT("uri_token4", "name_token4", 50);
       expect(ninjaNFT.tokenCountToUri(4) === "uri_token4");
       expect(ninjaNFT.uriToTokenCount("uri_token4") === 4);
       expect(ninjaNFT.tokenCountToTokenInfo(4).id === 4);
       expect(ninjaNFT.tokenCountToTokenInfo(4).name === "name_token4");
-      expect(ninjaNFT.tokenCountToTokenInfo(4).symbol === "symbol_token4");
       expect(ninjaNFT.tokenCountToTokenInfo(4).uri === "uri_token4");
       expect(ninjaNFT.tokenCountToTokenInfo(4).quantity === 50);
       expect(ninjaNFT.balanceOf(owner.address, 4) === 50);
@@ -118,7 +120,7 @@ describe("NinjaNFTNew", function () {
     });
 
     it('should mint NFT', async () => {
-      await ninjaNFT.createAndMintNFT("uri_token5", "name_token5", "symbol_token5", 50);
+      await ninjaNFT.createAndMintNFT("uri_token5", "name_token5", 50);
       await ninjaNFT.mintNFT(1, 100);
       expect(ninjaNFT.balanceOf(owner.address, 1) === 150);
     });
@@ -127,7 +129,7 @@ describe("NinjaNFTNew", function () {
   describe("Distributing", () => {
   // testing distributing NFTs
     it('should not distribute NFTs', async () => {
-      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", "symbol_token1", 100);
+      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", 100);
       await ninjaNFT.changeNinja(addr3.address, "CKr");
       await ninjaNFT.changeNinja(addr4.address, "RSlo");
       await ninjaNFT.changeNinja(addr5.address, "MLr");
@@ -139,7 +141,7 @@ describe("NinjaNFTNew", function () {
     });
 
     it('should distribute NFTs', async () => {
-      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", "symbol_token1", 100);
+      await ninjaNFT.createAndMintNFT("uri_token1", "name_token1", 100);
       await ninjaNFT.changeNinja(addr4.address, "RSlo");
       await ninjaNFT.changeNinja(addr5.address, "MLr");
       let amounts = [5, 10];

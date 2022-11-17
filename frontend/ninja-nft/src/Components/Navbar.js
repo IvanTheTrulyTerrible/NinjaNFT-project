@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Web3Context } from '../Context/web3-context';
 import styled from "styled-components";
 import { NFTAdminModal } from './NFTAdminModal';
@@ -9,6 +9,10 @@ function Navbar({ user }) {
 
     const { chainId, currentAccount, ninjaNFTContract, isAdmin, isNinja, nfts, setNfts, errorPage, switchNetwork, connectWallet,
       tokenID, setTokenID, contractAddress, currentShortName, maticBalance, maticContractBalance, isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink } = useContext(Web3Context)
+
+    useEffect(() => {
+      console.log(isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink)
+    }, [isMobile, isMetamaskBrowser, metamaskDeeplink, isBraveBrowser, braveDeeplink])
 
     function toggleAdminModal() {
       if (isAdmin) {
@@ -39,18 +43,6 @@ function Navbar({ user }) {
                     }
                     {isNinja && <h5>Admire your rightful and prestitious NFT badges</h5>
                     }
-                    {/*
-                    {<h5>IsMobile: {isMobile}</h5>
-                    }
-                    {<h5>IsMetamask: {isMetamaskBrowser}</h5>
-                    }
-                    {<h5>MMDeeplink: {metamaskDeeplink}</h5>
-                    }
-                    {<h5>IsBrave: {isBraveBrowser}</h5>
-                    }
-                    {<h5>BraveDeeplink: {braveDeeplink}</h5>
-                    }
-                  */}
                 </div>
                 <div>
                     {/*

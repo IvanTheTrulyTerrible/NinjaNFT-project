@@ -10,7 +10,6 @@ const NFTAdminModal = (props) => {
 
     const [fileImg, setFileImg] = useState(null);
     const [name, setName] = useState("")
-    const [symb, setSymb] = useState("")
     const [desc, setDesc] = useState("")
     const [amount, setAmount] = useState("")
     const [formFields, setFormFields] = useState([{ display_type: '', trait_type: '', value: '' , max_value: ''}])
@@ -105,7 +104,7 @@ const NFTAdminModal = (props) => {
 
     const mintNFT = async (tokenURI, currentAccount, desc, ImgHash, name, cleanArray) => {
       try {
-        let response = await ninjaNFTContract.createAndMintNFT(tokenURI, currentAccount, symb, amount)
+        let response = await ninjaNFTContract.createAndMintNFT(tokenURI, currentAccount, amount)
 
         setFileImg("");
         setName("");
@@ -127,7 +126,6 @@ const NFTAdminModal = (props) => {
               "image": ImgHash,
               "name": name,
               "attributes": cleanArray,
-              "symbol": symb,
               "tokenCount": val,
               "quantity": amount,
               "copies": 0
@@ -261,12 +259,17 @@ const NFTAdminModal = (props) => {
     }
 
     useEffect(() => {
-      if (fileImg && name && symb && desc && amount) {
+      if (fileImg && name && desc && amount) {
         setCreateForm(true);
       } else {
         setCreateForm(false);
       }
-    }, [fileImg, name, symb, desc, amount])
+    }, [fileImg, name, desc, amount])
+
+    useEffect(() => {
+      getAdmins();
+      getNinjas();
+    }, [adminList, ninjaList])
 
     useEffect(() => {
       if (adminAddress && adminAddress.length === 42) {
@@ -303,7 +306,6 @@ const NFTAdminModal = (props) => {
               <SectionText>Metadata Attributes</SectionText>
               <form onSubmit={sendFileToIPFS}>
                 <div><input type="text" onChange={(e) => setName(e.target.value)} placeholder='NFT name' required value={name} /></div>
-                <div><input type="text" onChange={(e) => setSymb(e.target.value)} placeholder='NFT symbol' required value={symb} /></div>
                 <div><input type="text" onChange={(e) => setDesc(e.target.value)} placeholder='NFT description' required value={desc} /></div>
                 <div><input type="number" onChange={(e) => setAmount(e.target.value)} placeholder='Minted amount' required value={amount} /></div>
                 {formFields.map((form, index) => {

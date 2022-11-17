@@ -13,7 +13,7 @@ const NFTModal = (props) => {
             <NftPhoto style={{ backgroundImage: `url(${nft.image})`, height: 400, width: 400 }} />
             <div>
               <ModalTitle>{nft.name}</ModalTitle>
-              <Paragraph style={{ float: "right" }}> {`Symbol: ${nft && nft.symbol}`}</Paragraph>
+              {/*<Paragraph style={{ float: "right" }}> {`Symbol: ${nft && nft.symbol}`}</Paragraph>*/}
               <Paragraph> {`Token ID: ${nft.tokenCount}`} </Paragraph>
               <Paragraph> {`You own ${nft.copies} copies of ${nft.quantity}`} </Paragraph>
               <SectionText> Description </SectionText>
