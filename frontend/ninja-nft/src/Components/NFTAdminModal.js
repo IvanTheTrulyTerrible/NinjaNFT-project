@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react'
+import React, { useEffect, useState, useCallback, useContext, useRef } from 'react'
 import styled from "styled-components"
 import Dropzone from "./Dropzone";
 import { Web3Context } from '../Context/web3-context';
@@ -7,6 +7,9 @@ const axios = require("axios");
 const NFTAdminModal = (props) => {
 
     const { ninjaNFTContract, currentAccount, adminList, ninjaList, getAdmins, getNinjas, getNfts, getOwnNfts, getMaticBalance } = useContext(Web3Context)
+
+    const prevAdminListRef = useRef();
+    const prevNinjaListRef = useRef();
 
     const [fileImg, setFileImg] = useState(null);
     const [name, setName] = useState("")
@@ -269,7 +272,7 @@ const NFTAdminModal = (props) => {
     useEffect(() => {
       getAdmins();
       getNinjas();
-    }, [adminList, ninjaList])
+    }, [adminList.length, ninjaList.length])
 
     useEffect(() => {
       if (adminAddress && adminAddress.length === 42) {
