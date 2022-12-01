@@ -117,7 +117,7 @@ export const Web3Provider = ({ children }) => {
             await setMetamaskDeeplink(metamaskAppDeepLink);
             const braveAppDeepLink = "brave://open-url?url=" + `${process.env.REACT_APP_DAPP_URL}`;
             await setBraveDeeplink(braveAppDeepLink);
-            console.log("metamaskDeeplink", metamaskDeeplink)
+            //console.log("metamaskDeeplink", metamaskDeeplink)
 
             const isMobile = window.matchMedia("only screen and (max-width: 760px)");
             const isMobile2 = /(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile|w3c|acs\-|alav|alca|amoi|audi|avan|benq|bird|blac|blaz|brew|cell|cldc|cmd\-|dang|doco|eric|hipt|inno|ipaq|java|jigs|kddi|keji|leno|lg\-c|lg\-d|lg\-g|lge\-|maui|maxo|midp|mits|mmef|mobi|mot\-|moto|mwbp|nec\-|newt|noki|palm|pana|pant|phil|play|port|prox|qwap|sage|sams|sany|sch\-|sec\-|send|seri|sgh\-|shar|sie\-|siem|smal|smar|sony|sph\-|symb|t\-mo|teli|tim\-|tosh|tsm\-|upg1|upsi|vk\-v|voda|wap\-|wapa|wapi|wapp|wapr|webc|winw|winw|xda|xda\-) /i.test(navigator.userAgent);
@@ -154,7 +154,9 @@ export const Web3Provider = ({ children }) => {
         const checkIfAdmin = async () => {
             try {
                 await chainId;
+                console.log("got here here here", chainId, "haha here", `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`);
                 if (window.ethereum && ninjaNFTContract && currentAccount && chainId === `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`) {
+                    console.log("got here here here", chainId, `${process.env.REACT_APP_DEPLOYED_CHAIN_ID}`);
                     let adm = await ninjaNFTContract.isAdmin(currentAccount);
                     setIsAdmin(adm);
                     let nin = await ninjaNFTContract.isNinja(currentAccount);

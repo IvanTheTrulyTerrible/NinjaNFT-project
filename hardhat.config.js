@@ -27,8 +27,8 @@ module.exports = {
     polygon: {
         url: process.env.POLYGON_PROJECT_ID,
         chainId: 137,
-        accounts: [`0x` + process.env.PRIVATE_KEY_POLYGON],
-        gasPrice: 8000000000
+        accounts: [`0x` + process.env.PRIVATE_KEY_POLYGON]
+        //gasPrice: 800000000
     }
   }
 };

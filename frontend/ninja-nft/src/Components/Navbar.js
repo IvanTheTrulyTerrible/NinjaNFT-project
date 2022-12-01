@@ -45,7 +45,7 @@ function Navbar({ user }) {
                     }
                 </div>
                 <div>
-                    {/*
+                    {/*}
                     {chainId !== "" && <h3>Chain ID: {chainId}</h3>
                     }
                     {contractAddress !== "" && <h3>Contract Address: {contractAddress}</h3>

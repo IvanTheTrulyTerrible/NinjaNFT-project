@@ -8,7 +8,7 @@ async function main() {
   const COLLECTION_SYMBOL = "VZNFT";
   const ADMIN_NAME = "RJue";
   const signers = await ethers.getSigners();
-  signer = signers[0].address;
+  const signer = signers[0].address;
 
   const NinjaNFTNew = await ethers.getContractFactory("NinjaNFTNew");
   const ninjaNFT = await NinjaNFTNew.deploy(COLLECTION_NAME, COLLECTION_SYMBOL, signer, ADMIN_NAME);
