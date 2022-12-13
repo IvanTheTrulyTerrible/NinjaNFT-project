@@ -6,7 +6,7 @@ const { ethers } = require("hardhat");
 async function main() {
   const COLLECTION_NAME = "VZ NFT Collection";
   const COLLECTION_SYMBOL = "VZNFT";
-  const ADMIN_NAME = "RJue";
+  const ADMIN_NAME = "Adm_RJue";
   const signers = await ethers.getSigners();
   const signer = signers[0].address;
 
